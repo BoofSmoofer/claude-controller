@@ -68,12 +68,12 @@ export const WorkflowPipeline = () => {
 	const steps = [
 		{
 			title: 'Select Ticket',
-			status: 'completed' as const,
+			status: 'in-progress' as const,
 			description: 'Jira ticket selected',
 		},
 		{
 			title: 'Plan',
-			status: 'in-progress' as const,
+			status: 'pending' as const,
 			description: 'Claude planning implementation',
 		},
 		{
