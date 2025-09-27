@@ -19,11 +19,7 @@ export const StatusIndicator = ({
 			case 'completed':
 				return <CheckCircle className={`${iconSize} text-success`} />;
 			case 'in-progress':
-				return (
-					<Clock
-						className={`${iconSize} text-accent animate-pulse`}
-					/>
-				);
+				return <Clock className={`${iconSize} animate-pulse`} />;
 			case 'error':
 				return (
 					<AlertCircle className={`${iconSize} text-destructive`} />
@@ -40,7 +36,7 @@ export const StatusIndicator = ({
 			case 'completed':
 				return 'text-success';
 			case 'in-progress':
-				return 'text-accent';
+				return '';
 			case 'error':
 				return 'text-destructive';
 			default:

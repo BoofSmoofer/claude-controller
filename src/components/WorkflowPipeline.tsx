@@ -34,7 +34,7 @@ const PipelineStep = ({
 			case 'completed':
 				return 'bg-success/10 border-success/20';
 			case 'in-progress':
-				return 'bg-accent/10 border-accent/20 shadow-glow';
+				return 'bg-accent/10 border-accent/20';
 			case 'error':
 				return 'bg-destructive/10 border-destructive/20';
 			default:
