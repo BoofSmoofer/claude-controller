@@ -72,7 +72,7 @@ const repositories = [
 ];
 
 export const PlanEditor = () => {
-	const [plan, setPlan] = useState(mockPlan);
+	const [plan, setPlan] = useState();
 	const [isEditing, setIsEditing] = useState(false);
 
 	return (
@@ -120,19 +120,25 @@ export const PlanEditor = () => {
 					</TabsList>
 
 					<TabsContent value='plan' className='mt-4'>
-						{isEditing ? (
+						{!plan ? (
+							<div className='space-y-4'>
+								<div className='text-center py-12 text-muted-foreground'>
+									<MessageSquare className='h-12 w-12 mx-auto mb-4 opacity-50' />
+									<p>Start planning to see it here</p>
+									<p className='text-sm mt-2'>
+										Plan will populate once you select a
+										jira ticket
+									</p>
+								</div>
+							</div>
+						) : (
 							<Textarea
+								disabled={!isEditing}
 								value={plan}
 								onChange={e => setPlan(e.target.value)}
 								className='min-h-[500px] font-mono text-sm'
 								placeholder='Enter implementation plan...'
 							/>
-						) : (
-							<div className='bg-muted/20 rounded-lg p-4 min-h-[500px] overflow-auto'>
-								<pre className='text-sm text-foreground whitespace-pre-wrap font-mono'>
-									{plan}
-								</pre>
-							</div>
 						)}
 					</TabsContent>
 

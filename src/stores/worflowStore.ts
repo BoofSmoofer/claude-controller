@@ -12,6 +12,5 @@ export const useWorkflowStore = create<WorkflowState>(set => ({
 	setJiraTicketSelected: isSelected =>
 		set({ jiraTicketSelected: isSelected }),
 	workingDirectory: null,
-	setWorkingDirectory: path =>
-		set({ workingDirectory: path }),
+	setWorkingDirectory: path => set({ workingDirectory: path }),
 }));

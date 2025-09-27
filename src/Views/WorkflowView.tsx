@@ -1,10 +1,11 @@
 import { JiraTicketSelector } from '@/components/JiraTicketSelector';
 import { PlanEditor } from '@/components/PlanEditor';
 import { StatusIndicator } from '@/components/StatusIndicator';
-import { WorkflowPipeline } from '@/components/WorkflowPipeline';
 import { WorkingDirectorySelector } from '@/components/WorkingDirectorySelector';
+import AgentStatus from '@/components/AgentStatus';
 import { useWorkflowStore } from '@/stores/worflowStore';
 import { Folder } from 'lucide-react';
+import { useAgentStore } from '@/stores/agentStore';
 
 const WorkingDirectoryStatus = () => {
 	const { workingDirectory } = useWorkflowStore();
@@ -18,9 +19,10 @@ const WorkingDirectoryStatus = () => {
 		);
 	}
 
-	const shortPath = workingDirectory.length > 40
-		? '...' + workingDirectory.slice(-37)
-		: workingDirectory;
+	const shortPath =
+		workingDirectory.length > 40
+			? '...' + workingDirectory.slice(-37)
+			: workingDirectory;
 
 	return (
 		<div className='flex items-center gap-2 text-sm text-muted-foreground'>
@@ -31,15 +33,19 @@ const WorkingDirectoryStatus = () => {
 };
 
 export function WorkflowView() {
+	const { agentStatus, agentDetails, setAgentDetails, setAgentStatus } =
+		useAgentStore();
+
 	return (
 		<div>
 			<div className='min-h-screen bg-background p-6'>
 				<div className='max-w-7xl mx-auto space-y-6'>
-					{/* Working Directory Selection */}
-					<WorkingDirectorySelector />
-
-					{/* Workflow Pipeline */}
-					<WorkflowPipeline />
+					{/* Agent Status */}
+					<AgentStatus
+						status={agentStatus}
+						message={agentDetails}
+						className='w-full'
+					/>
 
 					{/* Main Content Grid */}
 					<div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
@@ -64,10 +70,7 @@ export function WorkflowView() {
 					/>
 				</div>
 				<div className='flex items-center gap-4'>
-					<WorkingDirectoryStatus />
-					<div className='text-sm text-muted-foreground'>
-						Ready for next workflow
-					</div>
+					<WorkingDirectorySelector />
 				</div>
 			</div>
 		</div>
