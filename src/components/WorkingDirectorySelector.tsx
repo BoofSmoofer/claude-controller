@@ -7,11 +7,9 @@ import { invoke } from '@tauri-apps/api/core';
 export const WorkingDirectorySelector = () => {
 	const { workingDirectory, setWorkingDirectory } = useWorkflowStore();
 	const [isSelecting, setIsSelecting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 
 	const handleSelectDirectory = async () => {
 		setIsSelecting(true);
-		setError(null);
 
 		try {
 			const result = await invoke<string | null>(
@@ -21,7 +19,6 @@ export const WorkingDirectorySelector = () => {
 				setWorkingDirectory(result);
 			}
 		} catch (err) {
-			setError('Failed to select directory');
 			console.error('Directory selection error:', err);
 		} finally {
 			setIsSelecting(false);
