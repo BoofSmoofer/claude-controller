@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { invoke } from '@tauri-apps/api/core';
 import { useIntegrationsStore } from '@/stores/integrationsStore';
+import dayjs from 'dayjs';
 
 interface PromptResult {
 	stopReason: string;
@@ -72,7 +73,9 @@ export const JiraTicketSelector = () => {
 
 		if (!jiraConfigured) {
 			setTicket(null);
-			setError('Configure Jira credentials in Integrations before searching.');
+			setError(
+				'Configure Jira credentials in Integrations before searching.'
+			);
 			return;
 		}
 
@@ -197,7 +200,9 @@ export const JiraTicketSelector = () => {
 					</div>
 					<Button
 						onClick={handleTicketIdSubmit}
-						disabled={isLoading || !ticketId.trim() || !jiraConfigured}
+						disabled={
+							isLoading || !ticketId.trim() || !jiraConfigured
+						}
 						className='px-4'>
 						{isLoading ? 'Loading...' : 'Search'}
 					</Button>
@@ -205,7 +210,8 @@ export const JiraTicketSelector = () => {
 
 				{!jiraConfigured && !error && (
 					<div className='p-3 rounded-lg bg-muted/20 text-muted-foreground border border-border/50 mb-4'>
-						Connect your Jira account from the Integrations view to fetch tickets.
+						Connect your Jira account from the Integrations view to
+						fetch tickets.
 					</div>
 				)}
 
@@ -254,7 +260,12 @@ export const JiraTicketSelector = () => {
 								</div>
 								<div className='flex items-center gap-2'>
 									<Calendar className='h-4 w-4' />
-									<span>Created: {ticket.created}</span>
+									<span>
+										Created:{' '}
+										{dayjs(ticket.created).format(
+											'YYYY-MM-DD'
+										)}
+									</span>
 								</div>
 								<div className='flex items-center gap-2'>
 									<span>Status: {ticket.status}</span>
