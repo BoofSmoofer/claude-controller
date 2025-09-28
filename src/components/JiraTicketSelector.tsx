@@ -4,6 +4,13 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { invoke } from '@tauri-apps/api/core';
+
+interface PromptResult {
+	stopReason: string;
+	meta?: unknown;
+	text: string;
+}
 
 interface JiraTicket {
 	id: string;
@@ -61,6 +68,8 @@ export const JiraTicketSelector = () => {
 		mockTickets[0]
 	);
 	const [searchQuery, setSearchQuery] = useState('');
+	const [promptResult, setPromptResult] = useState<PromptResult | null>(null);
+	const [isPrompting, setIsPrompting] = useState(false);
 
 	const filteredTickets = mockTickets.filter(
 		ticket =>
@@ -95,6 +104,22 @@ export const JiraTicketSelector = () => {
 				return 'bg-muted/10 text-muted-foreground border-muted/20';
 		}
 	};
+
+	async function handleTestPrompt() {
+		setIsPrompting(true);
+		try {
+			const reply = await invoke<PromptResult>('acp_prompt', {
+				text: 'Hello Claude',
+			});
+			setPromptResult(reply);
+			console.log('ACP reply', reply);
+		} catch (error) {
+			console.error('Prompt failed', error);
+			setPromptResult(null);
+		} finally {
+			setIsPrompting(false);
+		}
+	}
 
 	return (
 		<div className='space-y-4'>
@@ -164,12 +189,27 @@ export const JiraTicketSelector = () => {
 
 				{selectedTicket && (
 					<div className='mt-4 pt-4 border-t border-border'>
-						<Button className='w-full bg-gradient-primary text-primary-foreground hover:shadow-glow transition-smooth'>
-							Start Planning for {selectedTicket.key}
+						<Button
+							className='w-full bg-gradient-primary text-primary-foreground hover:shadow-glow transition-smooth'
+							onClick={handleTestPrompt}
+							disabled={isPrompting}>
+							{isPrompting ? 'Requesting…' : `Start Planning for ${selectedTicket.key}`}
 						</Button>
 					</div>
 				)}
 			</Card>
+
+			{promptResult && (
+				<Card className='p-4 space-y-2'>
+					<h3 className='text-sm font-semibold text-foreground'>Claude Reply</h3>
+					<p className='text-sm text-muted-foreground whitespace-pre-wrap'>
+						{promptResult.text || '[no content received]'}
+					</p>
+					<p className='text-xs text-muted-foreground'>
+						Stop reason: {promptResult.stopReason}
+					</p>
+				</Card>
+			)}
 		</div>
 	);
 };

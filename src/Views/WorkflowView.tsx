@@ -6,6 +6,8 @@ import AgentStatus from '@/components/AgentStatus';
 import { useWorkflowStore } from '@/stores/worflowStore';
 import { Folder } from 'lucide-react';
 import { useAgentStore } from '@/stores/agentStore';
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 
 const WorkingDirectoryStatus = () => {
 	const { workingDirectory } = useWorkflowStore();
@@ -33,8 +35,35 @@ const WorkingDirectoryStatus = () => {
 };
 
 export function WorkflowView() {
-	const { agentStatus, agentDetails, setAgentDetails, setAgentStatus } =
-		useAgentStore();
+	const {
+		agentStatus,
+		agentDetails,
+		acpStatus,
+		setAcpStatus,
+		setAgentDetails,
+		setAgentStatus,
+	} = useAgentStore();
+	const { workingDirectory } = useWorkflowStore();
+
+	useEffect(() => {
+		async function startAcp() {
+			try {
+				await invoke('acp_start', {
+					useCliAuth: true,
+					projectRoot: workingDirectory,
+				});
+				setAcpStatus(true);
+				setAgentStatus('idle');
+				setAgentDetails('Waiting for instructions');
+			} catch (error) {
+				setAcpStatus(false);
+				setAgentStatus('error');
+				setAgentDetails('Ensure you have set your working directory');
+			}
+		}
+
+		startAcp();
+	}, [workingDirectory]);
 
 	return (
 		<div>
@@ -63,7 +92,10 @@ export function WorkflowView() {
 			</div>
 			<div className='flex items-center justify-between bg-card border border-border p-4 sticky bottom-0'>
 				<div className='flex items-center gap-4'>
-					<StatusIndicator status='pending' label='ACP Subprocess' />
+					<StatusIndicator
+						status={acpStatus ? 'completed' : 'pending'}
+						label='ACP Subprocess'
+					/>
 					<StatusIndicator
 						status='completed'
 						label='Last Execution'

@@ -4,12 +4,24 @@ import { Brain, Zap, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface AgentStatusProps {
-	status: 'idle' | 'thinking' | 'processing' | 'completed' | 'error';
+	status:
+		| 'idle'
+		| 'thinking'
+		| 'processing'
+		| 'completed'
+		| 'error'
+		| 'waiting';
 	message?: string;
 	className?: string;
 }
 
 const statusConfig = {
+	waiting: {
+		icon: Brain,
+		color: 'text-muted-foreground',
+		bgColor: 'bg-muted/20',
+		label: 'Waiting',
+	},
 	idle: {
 		icon: Brain,
 		color: 'text-muted-foreground',
