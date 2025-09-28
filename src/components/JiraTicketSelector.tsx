@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Search, ExternalLink, User, Calendar } from 'lucide-react';
+import { Search, User, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -242,7 +242,6 @@ export const JiraTicketSelector = () => {
 										{ticket.priority}
 									</Badge>
 								</div>
-								<ExternalLink className='h-4 w-4 text-muted-foreground hover:text-foreground transition-smooth cursor-pointer' />
 							</div>
 
 							<h3 className='font-semibold text-foreground mb-3 text-base'>

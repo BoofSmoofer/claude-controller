@@ -251,6 +251,8 @@ async fn setup_connection(
         Command::new("claude-code-acp")
     };
 
+    cmd.current_dir(&root);
+
     let mut child = cmd
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
