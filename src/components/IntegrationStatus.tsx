@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useIntegrationsStore } from '@/stores/integrationsStore';
 
 interface Integration {
 	name: string;
@@ -9,22 +11,25 @@ interface Integration {
 	details?: string;
 }
 
-const integrations: Integration[] = [
-	{
-		name: 'Jira',
-		status: 'connected',
-		lastSync: '2 minutes ago',
-		details: '123 tickets synced',
-	},
-	{
-		name: 'Bitbucket',
-		status: 'connected',
-		lastSync: '5 minutes ago',
-		details: '15 repositories accessible',
-	},
-];
-
 export const IntegrationStatus = () => {
+	const jiraConfigured = useIntegrationsStore(
+		state => Boolean(state.jira.baseUrl && state.jira.email && state.jira.apiToken)
+	);
+
+	const integrations = useMemo<Integration[]>(
+		() => [
+			{
+				name: 'Jira',
+				status: jiraConfigured ? 'connected' : 'error',
+				lastSync: jiraConfigured ? 'Credentials saved' : 'Not configured',
+				details: jiraConfigured
+					? 'Ready to fetch tickets'
+					: 'Set base URL, email, and API token',
+			},
+		],
+		[jiraConfigured]
+	);
+
 	const getStatusIcon = (status: Integration['status']) => {
 		switch (status) {
 			case 'connected':

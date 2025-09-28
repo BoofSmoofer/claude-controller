@@ -1,4 +1,5 @@
 import { WorkflowView } from './WorkflowView';
+import { IntegrationsView } from './IntegrationsView';
 import { ViewId } from '@/stores/navigationStore';
 import { Workflow, Settings, Blocks } from 'lucide-react';
 
@@ -13,7 +14,7 @@ export const ViewsDetails: ViewDetails[] = [
 		id: 'integrations',
 		title: 'Integrations',
 		icon: Blocks,
-		component: <div />,
+		component: <IntegrationsView />,
 	},
 	{
 		id: 'settings',
