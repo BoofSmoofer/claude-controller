@@ -3,7 +3,6 @@ import { PlanEditor } from '@/components/PlanEditor';
 import { StatusIndicator } from '@/components/StatusIndicator';
 import { WorkingDirectorySelector } from '@/components/WorkingDirectorySelector';
 import { WorkflowInitialization } from '@/components/WorkflowInitialization';
-import { WorkflowHeader } from '@/components/WorkflowHeader';
 import AgentStatus from '@/components/AgentStatus';
 import { useWorkflowStore } from '@/stores/worflowStore';
 import { useAgentStore } from '@/stores/agentStore';

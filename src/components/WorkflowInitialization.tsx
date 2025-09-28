@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import {
 	Card,
@@ -7,13 +7,16 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { CheckCircle, Loader2, FolderOpen } from 'lucide-react';
+import { CheckCircle, Loader2, FolderOpen, Settings } from 'lucide-react';
 import { WorkingDirectorySelector } from '@/components/WorkingDirectorySelector';
-import AgentStatus from '@/components/AgentStatus';
 import { useWorkflowStore } from '@/stores/worflowStore';
 import { useAgentStore } from '@/stores/agentStore';
+import { useIntegrationsStore } from '@/stores/integrationsStore';
+import { Button } from '@/components/ui/button';
+import { useNavigationStore } from '@/stores/navigationStore';
 
 type InitializationStep =
+	| 'jira-check'
 	| 'directory'
 	| 'starting-acp'
 	| 'configuring'
@@ -25,14 +28,22 @@ interface StepConfig {
 	isActive: (step: InitializationStep) => boolean;
 	isComplete: (step: InitializationStep) => boolean;
 	showDirectorySelector?: boolean;
+	showJiraSetup?: boolean;
 }
 
 const steps: StepConfig[] = [
 	{
+		title: 'Check Jira Integration',
+		description: 'Verify Jira connection is configured',
+		isActive: step => step === 'jira-check',
+		isComplete: step => !['jira-check'].includes(step),
+		showJiraSetup: true,
+	},
+	{
 		title: 'Select Working Directory',
 		description: 'Choose your project folder',
 		isActive: step => step === 'directory',
-		isComplete: step => step !== 'directory',
+		isComplete: step => !['jira-check', 'directory'].includes(step),
 		showDirectorySelector: true,
 	},
 	{
@@ -59,14 +70,18 @@ function StepIndicator({
 	step,
 	config,
 	workingDirectory,
+	jiraConfigured,
+	onJiraSetup,
 }: {
 	step: InitializationStep;
 	config: StepConfig;
 	workingDirectory: string | null;
+	jiraConfigured: boolean;
+	onJiraSetup: () => void;
 }) {
 	const isActive = config.isActive(step);
 	const isComplete = config.isComplete(step);
-	const isLoading = isActive && step !== 'directory';
+	const isLoading = isActive && step !== 'directory' && step !== 'jira-check';
 
 	return (
 		<div className='flex items-center gap-3 p-3 rounded-lg border'>
@@ -90,11 +105,24 @@ function StepIndicator({
 						{config.title === 'Select Working Directory' &&
 						workingDirectory
 							? workingDirectory
+							: config.title === 'Check Jira Integration' && jiraConfigured
+							? 'Jira integration is configured'
 							: config.description}
 					</div>
 				</div>
 				{config.showDirectorySelector && isActive && (
 					<WorkingDirectorySelector />
+				)}
+				{config.showJiraSetup && isActive && !jiraConfigured && (
+					<Button
+						onClick={onJiraSetup}
+						variant="outline"
+						size="sm"
+						className="flex items-center gap-2"
+					>
+						<Settings className="h-4 w-4" />
+						Configure Jira
+					</Button>
 				)}
 			</div>
 		</div>
@@ -104,21 +132,36 @@ function StepIndicator({
 export function WorkflowInitialization() {
 	const { workingDirectory, setWorkflowInitialised } = useWorkflowStore();
 	const {
-		agentStatus,
-		agentDetails,
 		setAcpStatus,
 		setAgentDetails,
 		setAgentStatus,
 	} = useAgentStore();
+	const { jira } = useIntegrationsStore();
+	const { setActiveView } = useNavigationStore();
 
 	const [initializationStep, setInitializationStep] =
-		useState<InitializationStep>('directory');
+		useState<InitializationStep>('jira-check');
+
+	const jiraConfigured = useMemo(
+		() => Boolean(jira.baseUrl && jira.email && jira.apiToken),
+		[jira.baseUrl, jira.email, jira.apiToken]
+	);
+
+	useEffect(() => {
+		if (jiraConfigured && initializationStep === 'jira-check') {
+			setInitializationStep('directory');
+		}
+	}, [jiraConfigured, initializationStep]);
 
 	useEffect(() => {
 		if (workingDirectory && initializationStep === 'directory') {
 			initializeWorkflow();
 		}
 	}, [workingDirectory]);
+
+	const handleJiraSetup = () => {
+		setActiveView('integrations');
+	};
 
 	const initializeWorkflow = async () => {
 		setInitializationStep('starting-acp');
@@ -181,6 +224,8 @@ export function WorkflowInitialization() {
 								step={initializationStep}
 								config={stepConfig}
 								workingDirectory={workingDirectory}
+								jiraConfigured={jiraConfigured}
+								onJiraSetup={handleJiraSetup}
 							/>
 						))}
 					</CardContent>
