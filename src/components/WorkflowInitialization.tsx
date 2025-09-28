@@ -105,7 +105,8 @@ function StepIndicator({
 						{config.title === 'Select Working Directory' &&
 						workingDirectory
 							? workingDirectory
-							: config.title === 'Check Jira Integration' && jiraConfigured
+							: config.title === 'Check Jira Integration' &&
+							  jiraConfigured
 							? 'Jira integration is configured'
 							: config.description}
 					</div>
@@ -116,11 +117,10 @@ function StepIndicator({
 				{config.showJiraSetup && isActive && !jiraConfigured && (
 					<Button
 						onClick={onJiraSetup}
-						variant="outline"
-						size="sm"
-						className="flex items-center gap-2"
-					>
-						<Settings className="h-4 w-4" />
+						variant='outline'
+						size='sm'
+						className='flex items-center gap-2'>
+						<Settings className='h-4 w-4' />
 						Configure Jira
 					</Button>
 				)}
@@ -131,11 +131,7 @@ function StepIndicator({
 
 export function WorkflowInitialization() {
 	const { workingDirectory, setWorkflowInitialised } = useWorkflowStore();
-	const {
-		setAcpStatus,
-		setAgentDetails,
-		setAgentStatus,
-	} = useAgentStore();
+	const { setAcpStatus, setAgentDetails, setAgentStatus } = useAgentStore();
 	const { jira } = useIntegrationsStore();
 	const { setActiveView } = useNavigationStore();
 
@@ -200,11 +196,8 @@ export function WorkflowInitialization() {
 			<div className='max-w-2xl w-full space-y-6'>
 				<div className='text-center space-y-2'>
 					<h1 className='text-2xl font-bold'>
-						Claude Controller Setup
-					</h1>
-					<p className='text-muted-foreground'>
 						Initialize your development workflow
-					</p>
+					</h1>
 				</div>
 
 				<Card>

@@ -10,7 +10,7 @@ use agent_client_protocol::{
 };
 use anyhow::Context;
 use serde::Serialize;
-use std::{path::PathBuf, sync::Arc, thread};
+use std::{fs, path::{Path, PathBuf}, sync::Arc, thread};
 use tokio::{
     process::Command,
     sync::{mpsc, oneshot},
@@ -242,6 +242,8 @@ async fn setup_connection(
     root: PathBuf,
     use_cli_auth: bool,
 ) -> anyhow::Result<(WorkerContext, mpsc::UnboundedReceiver<SessionNotification>)> {
+    ensure_workspace_dir(&root)?;
+
     let mut cmd = if use_cli_auth {
         let mut c = Command::new(if cfg!(windows) { "npx.cmd" } else { "npx" });
         c.args(["acp-claude-code"]);
@@ -333,6 +335,12 @@ fn handle_notification(
             agent_text.push_str(&text_content.text);
         }
     }
+}
+
+fn ensure_workspace_dir(root: &Path) -> std::io::Result<PathBuf> {
+    let workspace = root.join(".claude");
+    fs::create_dir_all(&workspace)?;
+    Ok(workspace)
 }
 
 #[cfg(test)]
