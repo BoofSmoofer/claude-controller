@@ -15,17 +15,10 @@ import {
 import { Home } from 'lucide-react';
 import { ViewsDetails } from './Views';
 import { useNavigationStore } from '@/stores/navigationStore';
-import { useAppStore } from './stores/appStore';
-import { Startup } from './Views/Startup';
 
 function App() {
-	const { hasInitiliased } = useAppStore();
 	const { activeView, setActiveView } = useNavigationStore();
 	const currentView = ViewsDetails.find(view => view.id === activeView);
-
-	if (!hasInitiliased) {
-		return <Startup />;
-	}
 
 	return (
 		<SidebarProvider>

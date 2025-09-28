@@ -64,12 +64,7 @@ Implement OAuth2 authentication with role-based access control for the admin pan
 
 ### Estimated Effort: 3-5 days`;
 
-const repositories = [
-	{ name: 'auth-service', status: 'analyzed', files: 12 },
-	{ name: 'frontend-admin', status: 'analyzing', files: 8 },
-	{ name: 'shared-types', status: 'pending', files: 3 },
-	{ name: 'database-migrations', status: 'analyzed', files: 5 },
-];
+const repositories = [];
 
 export const PlanEditor = () => {
 	const [plan, setPlan] = useState();
@@ -144,36 +139,49 @@ export const PlanEditor = () => {
 
 					<TabsContent value='repos' className='mt-4'>
 						<div className='space-y-3'>
-							<h3 className='text-sm font-semibold text-foreground mb-3'>
-								Repository Analysis
-							</h3>
-							{repositories.map(repo => (
-								<div
-									key={repo.name}
-									className='flex items-center justify-between p-3 bg-muted/20 rounded-lg'>
-									<div className='flex items-center gap-3'>
-										<GitBranch className='h-4 w-4 text-muted-foreground' />
-										<span className='font-mono text-sm text-foreground'>
-											{repo.name}
-										</span>
+							{repositories.length === 0 && (
+								<div className='space-y-4'>
+									<div className='text-center py-12 text-muted-foreground'>
+										<GitBranch className='h-12 w-12 mx-auto mb-4 opacity-50' />
+										<p>
+											Related repositories will show here
+										</p>
+										<p className='text-sm mt-2'>
+											Add related repositories to see them
+											here
+										</p>
+									</div>
+								</div>
+							)}
+							{repositories.length > 0 &&
+								repositories.map(repo => (
+									<div
+										key={repo.name}
+										className='flex items-center justify-between p-3 bg-muted/20 rounded-lg'>
+										<div className='flex items-center gap-3'>
+											<GitBranch className='h-4 w-4 text-muted-foreground' />
+											<span className='font-mono text-sm text-foreground'>
+												{repo.name}
+											</span>
+											<Badge
+												variant='outline'
+												className='text-xs'>
+												{repo.files} files
+											</Badge>
+										</div>
 										<Badge
-											variant='outline'
-											className='text-xs'>
-											{repo.files} files
+											className={`text-xs ${
+												repo.status === 'analyzed'
+													? 'status-completed'
+													: repo.status ===
+													  'analyzing'
+													? 'status-in-progress'
+													: 'status-pending'
+											}`}>
+											{repo.status}
 										</Badge>
 									</div>
-									<Badge
-										className={`text-xs ${
-											repo.status === 'analyzed'
-												? 'status-completed'
-												: repo.status === 'analyzing'
-												? 'status-in-progress'
-												: 'status-pending'
-										}`}>
-										{repo.status}
-									</Badge>
-								</div>
-							))}
+								))}
 						</div>
 					</TabsContent>
 
